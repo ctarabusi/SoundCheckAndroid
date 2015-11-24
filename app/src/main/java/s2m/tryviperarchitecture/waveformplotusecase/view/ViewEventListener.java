@@ -11,6 +11,8 @@ public interface ViewEventListener
 
     void setWaveformPlot(@NonNull WaveformPlotView waveformPlotView);
 
+    void setFrequencyPlot(@NonNull FrequencyPlotView frequencyPlotView);
+
     void viewVisible(@NonNull Activity activity);
 
     void viewGone();

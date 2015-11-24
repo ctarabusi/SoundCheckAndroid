@@ -22,6 +22,9 @@ public class WaveformFragment extends FragmentWithTitle
     @Bind(R.id.viewform_plot_view)
     WaveformPlotView waveformPlotView;
 
+   @Bind(R.id.frequency_plot_view)
+    FrequencyPlotView frequencyPlotView;
+
     @Override
     public int getTitle()
     {
@@ -36,6 +39,7 @@ public class WaveformFragment extends FragmentWithTitle
 
         eventListener = new WaveformPresenter();
         eventListener.setWaveformPlot(waveformPlotView);
+        eventListener.setFrequencyPlot(frequencyPlotView);
 
         return rootView;
     }

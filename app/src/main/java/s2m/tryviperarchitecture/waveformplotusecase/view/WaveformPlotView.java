@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -12,10 +13,12 @@ import android.view.View;
  */
 public class WaveformPlotView extends View
 {
+    private static String TAG = WaveformPlotView.class.getSimpleName();
 
-    private Paint mGridPaint;
-    private Paint mTimecodePaint;
-    private float mDensity;
+    private Paint   mGridPaint;
+    private Paint   mTimecodePaint;
+    private short[] samplesList;
+
 
     public WaveformPlotView(Context context)
     {
@@ -48,6 +51,11 @@ public class WaveformPlotView extends View
 
     }
 
+    public void setSamples(short[] samplesList)
+    {
+        this.samplesList = samplesList;
+    }
+
     @Override
     protected void onDraw(Canvas canvas)
     {
@@ -55,9 +63,13 @@ public class WaveformPlotView extends View
 
         int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
+        int centerHeight = measuredHeight / 2;
 
-        // Draw grid
+        Log.d(TAG, "samplesList size " + samplesList.length);
+
         int i = 0;
+        int previous = 0;
+        int previousSample = 0;
         while (i < measuredWidth)
         {
             boolean paintGrid = i % 100 == 0;
@@ -71,6 +83,15 @@ public class WaveformPlotView extends View
             {
                 canvas.drawText(String.valueOf(i), i + 20, measuredHeight - 20, mTimecodePaint);
             }
+
+            int sample = samplesList[i + 11000];
+            float valueNormalized = (float) sample / Short.MAX_VALUE;
+            int scaledSample = centerHeight - (int) (valueNormalized * centerHeight);
+
+            canvas.drawLine(previous, previousSample, i, scaledSample, mGridPaint);
+
+            previous = i;
+            previousSample = scaledSample;
             i++;
         }
     }
