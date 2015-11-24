@@ -19,6 +19,7 @@ public class WaveformPlotView extends View
     private Paint   mTimecodePaint;
     private short[] samplesList;
 
+    int maxValue = 0;
 
     public WaveformPlotView(Context context)
     {
@@ -54,6 +55,15 @@ public class WaveformPlotView extends View
     public void setSamples(short[] samplesList)
     {
         this.samplesList = samplesList;
+
+        for (short sample : samplesList)
+        {
+            if (maxValue < sample)
+            {
+                maxValue = sample;
+            }
+        }
+
     }
 
     @Override
@@ -85,7 +95,7 @@ public class WaveformPlotView extends View
             }
 
             int sample = samplesList[i + 11000];
-            float valueNormalized = (float) sample / Short.MAX_VALUE;
+            double valueNormalized = (double) sample / maxValue;
             int scaledSample = centerHeight - (int) (valueNormalized * centerHeight);
 
             canvas.drawLine(previous, previousSample, i, scaledSample, mGridPaint);

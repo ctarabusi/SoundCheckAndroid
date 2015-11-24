@@ -53,7 +53,7 @@ public class MainActivity extends ActionBarActivity
 
         if (savedInstanceState == null)
         {
-            navigateTo(Router.NavigationPaths.WAVEFORM);
+            navigateTo(Router.NavigationPaths.SPECTOGRAM);
         }
     }
 
@@ -89,19 +89,15 @@ public class MainActivity extends ActionBarActivity
 
     public void navigateTo(int menuId)
     {
-        if (menuId == R.id.navDrawerComments)
+        if (menuId == R.id.navDrawerSpectrogram)
         {
-            navigateTo(Router.NavigationPaths.COMMENTS);
-        }
-        else if (menuId == R.id.navDrawerTabLayout)
-        {
-            navigateTo(Router.NavigationPaths.TAB_LAYOUT);
+            navigateTo(Router.NavigationPaths.SPECTOGRAM);
         }
         else if (menuId == R.id.navDrawerRecord)
         {
             navigateTo(Router.NavigationPaths.RECORD);
         }
-        else if (menuId == R.id.navDrawerCamera)
+        else if (menuId == R.id.navDrawerWaveform)
         {
             navigateTo(Router.NavigationPaths.WAVEFORM);
         }

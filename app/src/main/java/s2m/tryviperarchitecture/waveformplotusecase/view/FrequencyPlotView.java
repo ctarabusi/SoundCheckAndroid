@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import s2m.tryviperarchitecture.waveformplotusecase.interactor.Complex;
+import org.apache.commons.math.complex.Complex;
 
 /**
  * Created by cta on 23/11/15.

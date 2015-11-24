@@ -4,28 +4,22 @@
     <group android:checkableBehavior="single">
 
         <item
-            android:id="@+id/navDrawerComments"
-            android:checked="false"
-            android:icon="@drawable/ic_group_add_black_48dp"
-            android:title="@string/navigation_comments"/>
-
-        <item
-            android:id="@+id/navDrawerTabLayout"
-            android:checked="false"
-            android:icon="@drawable/ic_mood_black_48dp"
-            android:title="@string/navigation_tablayout"/>
-
-        <item
             android:id="@+id/navDrawerRecord"
             android:checked="false"
             android:icon="@drawable/ic_mic_black_48dp"
             android:title="@string/navigation_record"/>
 
         <item
-            android:id="@+id/navDrawerCamera"
+            android:id="@+id/navDrawerSpectrogram"
+            android:checked="false"
+            android:icon="@drawable/ic_group_add_black_48dp"
+            android:title="@string/navigation_spectrogram"/>
+
+        <item
+            android:id="@+id/navDrawerWaveform"
             android:checked="false"
             android:icon="@drawable/ic_camera_roll_black_48dp"
-            android:title="@string/navigation_camera"/>
+            android:title="@string/navigation_waveform"/>
 
     </group>
 </menu>

@@ -5,8 +5,7 @@ import android.support.annotation.UiThread;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-import s2m.tryviperarchitecture.firstusecase.view.CommentsFragment;
-import s2m.tryviperarchitecture.secondusecase.view.TabLayoutFragment;
+import s2m.tryviperarchitecture.spectogram.view.SpectrogramFragment;
 import s2m.tryviperarchitecture.thirdusecase.view.RecordFragment;
 import s2m.tryviperarchitecture.waveformplotusecase.view.WaveformFragment;
 
@@ -17,7 +16,7 @@ public class Router
 {
     public enum NavigationPaths
     {
-        COMMENTS, TAB_LAYOUT, RECORD, WAVEFORM
+        RECORD, WAVEFORM, SPECTOGRAM
     }
 
     private static Router instance = null;
@@ -38,12 +37,8 @@ public class Router
         FragmentWithTitle fragment;
         switch (navigation)
         {
-            case COMMENTS:
-                fragment = new CommentsFragment();
-                break;
-
-            case TAB_LAYOUT:
-                fragment = new TabLayoutFragment();
+            case SPECTOGRAM:
+                fragment = new SpectrogramFragment();
                 break;
 
             case RECORD:

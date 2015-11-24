@@ -1,4 +1,4 @@
-package s2m.tryviperarchitecture.waveformplotusecase.view;
+package s2m.tryviperarchitecture.spectogram.view;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -15,17 +15,19 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import s2m.tryviperarchitecture.R;
+import s2m.tryviperarchitecture.waveformplotusecase.view.WaveformPlotView;
 
 /**
  * Created by cta on 18/09/15.
  */
-public class WaveformPresenter implements ViewEventListener
+public class SpectrogramPresenter implements ViewEventListener
 {
-    private static String TAG = WaveformPresenter.class.getSimpleName();
+    private static String TAG = SpectrogramPresenter.class.getSimpleName();
 
-    private WaveformPlotView  waveformPlotView;
-    private WaveformPlotView  reconvertedWaveformPlotView;
-    private FrequencyPlotView frequencyPlotView;
+    private static int CHUNK_SIZE = 4096;
+
+    private WaveformPlotView waveformPlotView;
+    private SpectrogramView  spectrogramView;
 
     private short[] samplesList;
 
@@ -35,7 +37,7 @@ public class WaveformPresenter implements ViewEventListener
     private int   samplingFrequency;
     private int   bytesPerSecond;
 
-    public WaveformPresenter()
+    public SpectrogramPresenter()
     {
 
     }
@@ -48,58 +50,32 @@ public class WaveformPresenter implements ViewEventListener
 
         waveformPlotView.setSamples(samplesList);
 
-        final int totalSize = 131072; //sampleBytes.length;
+        final int totalSize = sampleBytes.length;
 
-        //When turning into frequency domain we'll need complex numbers:
-        Complex[] inputFFT = new Complex[totalSize];
+        int amountPossible = totalSize / CHUNK_SIZE;
 
-        //For all the chunks:
-        for (int times = 0; times < totalSize; times++)
+        Complex[][] results = new Complex[amountPossible][];
+
+        for (int times = 0; times < amountPossible; times++)
         {
-            double sampleWithWindowing = hammingWindow(totalSize, times) * sampleBytes[times];
-            Complex complex = new Complex(sampleWithWindowing, 0);
+            Complex[] complex = new Complex[CHUNK_SIZE];
+            for (int i = 0; i < CHUNK_SIZE; i++)
+            {
+                //Put the time domain data into a complex number with imaginary part as 0:
+                complex[i] = new Complex(sampleBytes[(times * CHUNK_SIZE) + i], 0);
+            }
             //Perform FFT analysis on the chunk:
-            inputFFT[times] = complex;
-        }
-
-        Complex[] results = new FastFourierTransformer().transform(inputFFT);
-        frequencyPlotView.setSamples(results);
-
-
-        displayInvertedFFT(results);
-    }
-
-    private void displayInvertedFFT(Complex[] results)
-    {
-        // Inverting the FFT, just half of the sample can be used being simmetrical
-        Complex[] resultTimePlot = new FastFourierTransformer().inversetransform(Arrays.copyOfRange(results, 0, results.length / 2));
-        short[] reconvertedToTime = new short[resultTimePlot.length];
-        int i = 0;
-        short minValue = 0;
-        short maxValue = 0;
-        for (Complex complex : resultTimePlot)
-        {
-            reconvertedToTime[i] = (short) (complex.abs() * 100);
-            if (reconvertedToTime[i] > maxValue)
+            try
             {
-                maxValue = reconvertedToTime[i];
+                results[times] = new FastFourierTransformer().transform(complex);
             }
-            if (reconvertedToTime[i] < minValue)
+            catch (IllegalArgumentException e)
             {
-                minValue = reconvertedToTime[i];
+                e.printStackTrace();
             }
-            i++;
         }
 
-        // removing average
-        short average = (short) ((maxValue - minValue) / 2);
-        i = 0;
-        for (short sample : reconvertedToTime)
-        {
-            reconvertedToTime[i] = (short) (sample - average);
-            i++;
-        }
-        reconvertedWaveformPlotView.setSamples(reconvertedToTime);
+        spectrogramView.setSamples(results);
     }
 
     public void setByteStreamFromWav(byte[] audioByteArray)
@@ -110,10 +86,10 @@ public class WaveformPresenter implements ViewEventListener
 
     private void parseData(byte[] audioByteArray)
     {
-        byte[] dataAudioByteArray = Arrays.copyOfRange(audioByteArray, 44, audioByteArray.length);
-        samplesList = new short[dataAudioByteArray.length / 2];
+       // byte[] dataAudioByteArray = Arrays.copyOfRange(audioByteArray, 44, audioByteArray.length);
+        samplesList = new short[audioByteArray.length / 2];
         // to turn bytes to shorts as either big endian or little endian.
-        ByteBuffer.wrap(dataAudioByteArray).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(samplesList);
+        ByteBuffer.wrap(audioByteArray).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(samplesList);
     }
 
     private void parseHeader(byte[] audioByteArray)
@@ -126,11 +102,6 @@ public class WaveformPresenter implements ViewEventListener
         bytesPerSecond = ByteBuffer.wrap(new byte[]{byteArrayHeader[28], byteArrayHeader[29], byteArrayHeader[30], byteArrayHeader[31]}).order(ByteOrder.LITTLE_ENDIAN).getInt();
     }
 
-    private float hammingWindow(int length, int index)
-    {
-        return 0.54f - 0.46f * (float) Math.cos(Math.PI * 2 * index / (length - 1));
-    }
-
     private byte[] readAsset(@NonNull Activity activity)
     {
         byte[] byteArray = null;
@@ -138,7 +109,7 @@ public class WaveformPresenter implements ViewEventListener
         Resources res = activity.getResources();
         try
         {
-            inputStream = res.openRawResource(R.raw.whistle);
+            inputStream = res.openRawResource(R.raw.piano_converted);
             byteArray = convertStreamToByteArray(inputStream);
         }
         catch (IOException e)
@@ -166,7 +137,7 @@ public class WaveformPresenter implements ViewEventListener
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buff = new byte[10240];
-        int i = Integer.MAX_VALUE;
+        int i;
         while ((i = is.read(buff, 0, buff.length)) > 0)
         {
             baos.write(buff, 0, i);
@@ -182,20 +153,15 @@ public class WaveformPresenter implements ViewEventListener
     }
 
     @Override
-    public void setWaveformPlot(@NonNull WaveformPlotView waveformPlotView)
+    public void setWaveformPlot(@NonNull s2m.tryviperarchitecture.waveformplotusecase.view.WaveformPlotView waveformPlotView)
     {
         this.waveformPlotView = waveformPlotView;
     }
 
     @Override
-    public void setReconvertedWaveformPlot(@NonNull WaveformPlotView waveformPlotView)
+    public void setSpectrogramView(@NonNull SpectrogramView spectrogramView)
     {
-        this.reconvertedWaveformPlotView = waveformPlotView;
+        this.spectrogramView = spectrogramView;
     }
 
-    @Override
-    public void setFrequencyPlot(@NonNull FrequencyPlotView frequencyPlotView)
-    {
-        this.frequencyPlotView = frequencyPlotView;
-    }
 }

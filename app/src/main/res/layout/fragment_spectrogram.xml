@@ -10,15 +10,10 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <s2m.tryviperarchitecture.waveformplotusecase.view.FrequencyPlotView
-        android:id="@+id/frequency_plot_view"
+    <s2m.tryviperarchitecture.spectogram.view.SpectrogramView
+        android:id="@+id/spectrogram_plot_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <s2m.tryviperarchitecture.waveformplotusecase.view.WaveformPlotView
-        android:id="@+id/reconverted_viewform_plot_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
 </LinearLayout>

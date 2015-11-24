@@ -1,4 +1,4 @@
-package s2m.tryviperarchitecture.waveformplotusecase.view;
+package s2m.tryviperarchitecture.spectogram.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,24 +9,22 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import s2m.tryviperarchitecture.FragmentWithTitle;
 import s2m.tryviperarchitecture.R;
+import s2m.tryviperarchitecture.waveformplotusecase.view.WaveformPlotView;
 
 /**
  * Created by cta on 18/09/15.
  */
-public class WaveformFragment extends FragmentWithTitle
+public class SpectrogramFragment extends FragmentWithTitle
 {
-    private static final String TAG = WaveformFragment.class.getSimpleName();
+    private static final String TAG = SpectrogramFragment.class.getSimpleName();
 
     private ViewEventListener eventListener;
 
     @Bind(R.id.viewform_plot_view)
     WaveformPlotView waveformPlotView;
 
-    @Bind(R.id.reconverted_viewform_plot_view)
-    WaveformPlotView reconvertedWaveformPlotView;
-
-   @Bind(R.id.frequency_plot_view)
-    FrequencyPlotView frequencyPlotView;
+    @Bind(R.id.spectrogram_plot_view)
+    SpectrogramView spectrogramView;
 
     @Override
     public int getTitle()
@@ -37,13 +35,12 @@ public class WaveformFragment extends FragmentWithTitle
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View rootView = inflater.inflate(R.layout.fragment_waveform, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_spectrogram, container, false);
         ButterKnife.bind(this, rootView);
 
-        eventListener = new WaveformPresenter();
+        eventListener = new SpectrogramPresenter();
         eventListener.setWaveformPlot(waveformPlotView);
-        eventListener.setFrequencyPlot(frequencyPlotView);
-        eventListener.setReconvertedWaveformPlot(reconvertedWaveformPlotView);
+        eventListener.setSpectrogramView(spectrogramView);
 
         return rootView;
     }

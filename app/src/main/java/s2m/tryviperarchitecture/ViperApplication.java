@@ -3,7 +3,6 @@ package s2m.tryviperarchitecture;
 import android.app.Application;
 import android.content.Context;
 
-import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -28,7 +27,5 @@ public class ViperApplication extends Application
     {
         super.onCreate();
         LeakCanary.install(this);
-
-        Stetho.initialize(Stetho.newInitializerBuilder(this).enableDumpapp(Stetho.defaultDumperPluginsProvider(this)).enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
     }
 }
