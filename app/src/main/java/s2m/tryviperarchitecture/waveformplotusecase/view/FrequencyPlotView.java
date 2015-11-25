@@ -50,6 +50,7 @@ public class FrequencyPlotView extends View
     public void setSamples(Complex[] samplesList)
     {
         this.samplesList = samplesList;
+        invalidate();
     }
 
     @Override
@@ -61,30 +62,31 @@ public class FrequencyPlotView extends View
         int measuredHeight = getMeasuredHeight();
         int centerHeight = measuredHeight / 2;
 
+        if (samplesList == null)
+        {
+            return;
+        }
+
         Log.d(TAG, "samplesList size " + samplesList.length);
 
         // Finding max value
-        int maxValue = 0;
-        for (int i = 0; i < samplesList.length; i++)
+        double maxValue = 64000;
+        for (Complex sample : samplesList)
         {
-            Complex sample = samplesList[i];
             double magnitude = sample.abs();
             if (maxValue < magnitude)
             {
-                maxValue = (int) magnitude;
+                maxValue = magnitude;
             }
         }
+
+        Log.d(TAG, "maxValue " + maxValue);
 
         for (int i = 0; i < samplesList.length; i++)
         {
             Complex sample = samplesList[i];
 
-            // To get the magnitude of the sound at a given frequency slice
-            // get the abs() from the complex number.
             double magnitude = sample.abs();
-
-            // The more blue in the color the more intensity for a given frequency point:
-           // mGridPaint.setColor(Color.argb(1, 0, (int) magnitude * 10, (int) magnitude * 20));
 
             float valueNormalized = (float) (magnitude / maxValue * measuredHeight);
             canvas.drawLine(i, measuredHeight - valueNormalized, i, measuredHeight, mGridPaint);

@@ -17,7 +17,7 @@ public class WaveformPlotView extends View
 
     private Paint   mGridPaint;
     private Paint   mTimecodePaint;
-    private short[] samplesList;
+    private Short[] samplesList;
 
     int maxValue = 0;
 
@@ -52,7 +52,7 @@ public class WaveformPlotView extends View
 
     }
 
-    public void setSamples(short[] samplesList)
+    public void setSamples(Short[] samplesList)
     {
         this.samplesList = samplesList;
 
@@ -64,12 +64,18 @@ public class WaveformPlotView extends View
             }
         }
 
+        invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas)
     {
         super.onDraw(canvas);
+
+        if (samplesList == null || samplesList.length == 0)
+        {
+            return;
+        }
 
         int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
@@ -94,7 +100,7 @@ public class WaveformPlotView extends View
                 canvas.drawText(String.valueOf(i), i + 20, measuredHeight - 20, mTimecodePaint);
             }
 
-            int sample = samplesList[i + 11000];
+            int sample = samplesList[i];
             double valueNormalized = (double) sample / maxValue;
             int scaledSample = centerHeight - (int) (valueNormalized * centerHeight);
 

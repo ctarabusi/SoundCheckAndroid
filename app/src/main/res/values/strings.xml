@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">Clean Architecture</string>
+    <string name="app_name">Sound Check</string>
 
     <string name="action_settings">Settings</string>
     <string name="action_map">Map</string>
 
-    <string name="navigation_spectrogram">Spectrogram</string>
     <string name="navigation_record">Record</string>
     <string name="navigation_waveform">Waveform</string>
+    <string name="navigation_spectrogram">Spectrogram</string>
 
     <string name="record_start">Started Recording...</string>
     <string name="record_stop">Stopped Recording</string>

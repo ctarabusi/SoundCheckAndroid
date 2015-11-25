@@ -53,7 +53,7 @@ public class MainActivity extends ActionBarActivity
 
         if (savedInstanceState == null)
         {
-            navigateTo(Router.NavigationPaths.SPECTOGRAM);
+            navigateTo(Router.NavigationPaths.RECORD);
         }
     }
 

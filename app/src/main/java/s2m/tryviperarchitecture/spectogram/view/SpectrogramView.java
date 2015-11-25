@@ -49,6 +49,7 @@ public class SpectrogramView extends View
     public void setSamples(Complex[][] samplesList)
     {
         this.samplesList = samplesList;
+        invalidate();
     }
 
     @Override
@@ -56,13 +57,12 @@ public class SpectrogramView extends View
     {
         super.onDraw(canvas);
 
-        int measuredWidth = getMeasuredWidth();
-        int measuredHeight = getMeasuredHeight();
-        int centerHeight = measuredHeight / 2;
+        if (samplesList == null)
+        {
+            return;
+        }
 
         Log.d(TAG, "samplesList size " + samplesList.length);
-
-        boolean logModeEnabled = false;
 
         for (int i = 0; i < samplesList.length; i++)
         {
@@ -81,17 +81,9 @@ public class SpectrogramView extends View
                 // Fill:
                 short blockSizeX = 20;
                 short blockSizeY = 20;
-                canvas.drawRect(i * blockSizeX, (size - line) * blockSizeY, (i + 1) * blockSizeX,  (size - line) * blockSizeY + blockSizeY, mGridPaint);
+                canvas.drawRect(i * blockSizeX, (size - line) * blockSizeY, (i + 1) * blockSizeX, (size - line) * blockSizeY + blockSizeY, mGridPaint);
 
-                // I used a improviced logarithmic scale and normal scale:
-                if (logModeEnabled && (Math.log10(line) * Math.log10(line)) > 1)
-                {
-                    freq += (int) (Math.log10(line) * Math.log10(line));
-                }
-                else
-                {
-                    freq++;
-                }
+                freq++;
             }
         }
     }

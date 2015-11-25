@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import s2m.tryviperarchitecture.spectogram.view.SpectrogramFragment;
-import s2m.tryviperarchitecture.thirdusecase.view.RecordFragment;
+import s2m.tryviperarchitecture.recordingusecase.view.RecordFragment;
 import s2m.tryviperarchitecture.waveformplotusecase.view.WaveformFragment;
 
 /**

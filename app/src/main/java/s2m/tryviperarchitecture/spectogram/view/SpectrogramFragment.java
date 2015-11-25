@@ -29,7 +29,7 @@ public class SpectrogramFragment extends FragmentWithTitle
     @Override
     public int getTitle()
     {
-        return R.string.navigation_waveform;
+        return R.string.navigation_spectrogram;
     }
 
     @Override
