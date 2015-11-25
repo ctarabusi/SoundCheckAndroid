@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 
 import s2m.soundcheck.R;
 
@@ -78,9 +79,9 @@ public class FileUtils
         return baos.toByteArray(); // be sure to close InputStream in calling function
     }
 
-    public static Short[] addZeroPaddingToPowerTwo(Short[] sampleArray)
+    public static Short[] addZeroPaddingToPowerTwo(List<Short> sampleList)
     {
-        int currentSize = sampleArray.length;
+        int currentSize = sampleList.size();
         int totalSize = 2;
         while (currentSize > totalSize)
         {
@@ -90,7 +91,7 @@ public class FileUtils
         Short[] sampleArrayWithZero = new Short[totalSize];
         Arrays.fill(sampleArrayWithZero, (short) 0);
         int i = 0;
-        for (Short sample : sampleArray)
+        for (Short sample : sampleList)
         {
             sampleArrayWithZero[i] = sample;
             i++;

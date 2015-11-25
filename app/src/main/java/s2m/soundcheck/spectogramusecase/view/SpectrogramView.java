@@ -64,6 +64,10 @@ public class SpectrogramView extends View
 
         Log.d(TAG, "samplesList size " + samplesList.length);
 
+        short blockSizeX = 20;
+        short blockSizeY = 20;
+        double magnitude;
+
         for (int i = 0; i < samplesList.length; i++)
         {
             int freq = 0;
@@ -73,14 +77,11 @@ public class SpectrogramView extends View
                 // To get the magnitude of the sound at a given frequency slice
                 // get the abs() from the complex number.
                 // In this case I use Math.log to get a more managable number (used for color)
-                double magnitude = Math.log(samplesList[i][freq].abs() + 1);
+                magnitude = Math.log(samplesList[i][freq].abs() + 1);
 
                 // The more blue in the color the more intensity for a given frequency point:
                 mGridPaint.setColor(Color.rgb(0, (int) magnitude * 10, (int) magnitude * 20));
 
-                // Fill:
-                short blockSizeX = 20;
-                short blockSizeY = 20;
                 canvas.drawRect(i * blockSizeX, (size - line) * blockSizeY, (i + 1) * blockSizeX, (size - line) * blockSizeY + blockSizeY, mGridPaint);
 
                 freq++;

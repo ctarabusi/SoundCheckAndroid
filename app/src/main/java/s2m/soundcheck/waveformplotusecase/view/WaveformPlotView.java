@@ -21,6 +21,11 @@ public class WaveformPlotView extends View
 
     int maxValue = 0;
 
+    boolean paintGrid;
+    boolean paintTime;
+    double  valueNormalized;
+    int     scaledSample;
+
     public WaveformPlotView(Context context)
     {
         super(context);
@@ -49,7 +54,6 @@ public class WaveformPlotView extends View
         mTimecodePaint.setAntiAlias(true);
         mTimecodePaint.setColor(Color.BLUE);
         mTimecodePaint.setTextSize(20f);
-
     }
 
     public void setSamples(Short[] samplesList)
@@ -88,21 +92,20 @@ public class WaveformPlotView extends View
         int previousSample = 0;
         while (i < measuredWidth)
         {
-            boolean paintGrid = i % 100 == 0;
+            paintGrid = i % 100 == 0;
             if (paintGrid)
             {
                 canvas.drawLine(i, 0, i, measuredHeight, mGridPaint);
             }
 
-            boolean paintTime = i % 200 == 0;
+            paintTime = i % 200 == 0;
             if (paintTime)
             {
                 canvas.drawText(String.valueOf(i), i + 20, measuredHeight - 20, mTimecodePaint);
             }
 
-            int sample = samplesList[i];
-            double valueNormalized = (double) sample / maxValue;
-            int scaledSample = centerHeight - (int) (valueNormalized * centerHeight);
+            valueNormalized = (double) samplesList[i] / maxValue;
+            scaledSample = centerHeight - (int) (valueNormalized * centerHeight);
 
             canvas.drawLine(previous, previousSample, i, scaledSample, mGridPaint);
 

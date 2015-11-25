@@ -56,9 +56,7 @@ public class FrequencyPlotView extends View
     {
         super.onDraw(canvas);
 
-        int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
-        int centerHeight = measuredHeight / 2;
 
         if (samplesList == null)
         {
@@ -71,23 +69,15 @@ public class FrequencyPlotView extends View
         double maxValue = 0;
         for (Complex sample : samplesList)
         {
-            double magnitude = sample.abs();
-            if (maxValue < magnitude)
+            if (maxValue < sample.abs())
             {
-                maxValue = magnitude;
+                maxValue = sample.abs();
             }
         }
 
-        Log.d(TAG, "maxValue " + maxValue);
-
         for (int i = 0; i < samplesList.length; i++)
         {
-            Complex sample = samplesList[i];
-
-            double magnitude = sample.abs();
-
-            float valueNormalized = (float) (magnitude / maxValue * measuredHeight);
-            canvas.drawLine(i, measuredHeight - valueNormalized, i, measuredHeight, mGridPaint);
+            canvas.drawLine(i, measuredHeight - (float) (samplesList[i].abs() / maxValue * measuredHeight), i, measuredHeight, mGridPaint);
         }
     }
 }

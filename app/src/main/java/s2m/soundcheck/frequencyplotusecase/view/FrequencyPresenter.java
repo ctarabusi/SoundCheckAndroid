@@ -35,6 +35,7 @@ public class FrequencyPresenter implements ViewEventListener
     {
         readFileSubscription = Observable.from(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Byte>()
         {
+            private short sample;
             private Byte firstByte;
 
             private List<Short> samples = new ArrayList<>();
@@ -42,27 +43,32 @@ public class FrequencyPresenter implements ViewEventListener
             @Override
             public void onCompleted()
             {
-                Short[] sampleArray = new Short[samples.size()];
-                samples.toArray(sampleArray);
+                Short[] sampleArray = FileUtils.addZeroPaddingToPowerTwo(samples);
 
-                sampleArray = FileUtils.addZeroPaddingToPowerTwo(sampleArray);
-
-                final int totalSize = sampleArray.length;
-
-                //When turning into frequency domain we'll need complex numbers:
-                Complex[] inputFFT = new Complex[totalSize];
-
-                //For all the chunks:
-                for (int times = 0; times < totalSize; times++)
+                Observable.from(sampleArray).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Short>()
                 {
-                    double sampleWithWindowing = FileUtils.hammingWindow(totalSize, times) * sampleArray[times];
-                    Complex complex = new Complex(sampleWithWindowing, 0);
-                    //Perform FFT analysis on the chunk:
-                    inputFFT[times] = complex;
-                }
 
-                Complex[] results = new FastFourierTransformer().transform(inputFFT);
-                frequencyPlotView.setSamples(results);
+                    List<Complex> inputFFTList = new ArrayList<>();
+
+                    @Override
+                    public void onCompleted()
+                    {
+                        Complex[] inputFFT = new Complex[inputFFTList.size()];
+                        frequencyPlotView.setSamples(new FastFourierTransformer().transform(inputFFTList.toArray(inputFFT)));
+                    }
+
+                    @Override
+                    public void onError(Throwable e)
+                    {
+
+                    }
+
+                    @Override
+                    public void onNext(Short sample)
+                    {
+                        inputFFTList.add(new Complex(sample, 0));
+                    }
+                });
             }
 
             @Override
@@ -80,7 +86,7 @@ public class FrequencyPresenter implements ViewEventListener
                 }
                 else
                 {
-                    short sample = ByteBuffer.wrap(new byte[]{firstByte, byteRead}).order(ByteOrder.LITTLE_ENDIAN).getShort();
+                    sample = ByteBuffer.wrap(new byte[]{firstByte, byteRead}).order(ByteOrder.LITTLE_ENDIAN).getShort();
                     firstByte = null;
                     samples.add(sample);
                 }
