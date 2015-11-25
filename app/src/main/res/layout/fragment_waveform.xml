@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
 
-    <s2m.tryviperarchitecture.waveformplotusecase.view.WaveformPlotView
+    <s2m.soundcheck.waveformplotusecase.view.WaveformPlotView
         android:id="@+id/viewform_plot_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
-    <s2m.tryviperarchitecture.waveformplotusecase.view.FrequencyPlotView
-        android:id="@+id/frequency_plot_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-</LinearLayout>
+        android:layout_height="match_parent"/>
+</FrameLayout>

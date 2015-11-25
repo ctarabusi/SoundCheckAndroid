@@ -1,9 +1,9 @@
-package s2m.tryviperarchitecture;
+package s2m.soundcheck;
 
 import org.junit.Test;
 
-import s2m.tryviperarchitecture.firstusecase.interactor.CommentsInteractor;
-import s2m.tryviperarchitecture.firstusecase.view.CommentsPresenter;
+import s2m.soundcheck.firstusecase.interactor.CommentsInteractor;
+import s2m.soundcheck.firstusecase.view.CommentsPresenter;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;

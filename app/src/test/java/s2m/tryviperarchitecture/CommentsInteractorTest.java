@@ -1,12 +1,12 @@
-package s2m.tryviperarchitecture;
+package s2m.soundcheck;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import s2m.tryviperarchitecture.firstusecase.entity.CommentEntity;
-import s2m.tryviperarchitecture.firstusecase.entity.CommentsDataStore;
-import s2m.tryviperarchitecture.firstusecase.interactor.CommentsInteractor;
+import s2m.soundcheck.firstusecase.entity.CommentEntity;
+import s2m.soundcheck.firstusecase.entity.CommentsDataStore;
+import s2m.soundcheck.firstusecase.interactor.CommentsInteractor;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
