@@ -21,7 +21,7 @@ public class FileUtils
     private static String TAG = FileUtils.class.getSimpleName();
 
 
-    public static Byte[] readAsset(@NonNull Activity activity)
+    public static byte[] readAsset(@NonNull Activity activity)
     {
         byte[] byteArray = null;
         InputStream inputStream = null;
@@ -53,6 +53,13 @@ public class FileUtils
             }
         }
 
+        return byteArray;
+    }
+
+    public static Byte[] readAssetObjects(@NonNull Activity activity)
+    {
+        byte[] byteArray = readAsset(activity);
+
         Byte[] byteObjects = new Byte[byteArray.length];
 
         int i = 0;
@@ -77,27 +84,6 @@ public class FileUtils
             baos.write(buff, 0, i);
         }
         return baos.toByteArray(); // be sure to close InputStream in calling function
-    }
-
-    public static Short[] addZeroPaddingToPowerTwo(List<Short> sampleList)
-    {
-        int currentSize = sampleList.size();
-        int totalSize = 2;
-        while (currentSize > totalSize)
-        {
-            totalSize = totalSize * 2;
-        }
-
-        Short[] sampleArrayWithZero = new Short[totalSize];
-        Arrays.fill(sampleArrayWithZero, (short) 0);
-        int i = 0;
-        for (Short sample : sampleList)
-        {
-            sampleArrayWithZero[i] = sample;
-            i++;
-        }
-
-        return sampleArrayWithZero;
     }
 
     public static float hammingWindow(int length, int index)

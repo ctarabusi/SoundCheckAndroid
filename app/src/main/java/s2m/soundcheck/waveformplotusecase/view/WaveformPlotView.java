@@ -17,7 +17,7 @@ public class WaveformPlotView extends View
 
     private Paint   mGridPaint;
     private Paint   mTimecodePaint;
-    private Short[] samplesList;
+    private short[] samplesList;
 
     int maxValue = 0;
 
@@ -56,7 +56,7 @@ public class WaveformPlotView extends View
         mTimecodePaint.setTextSize(20f);
     }
 
-    public void setSamples(Short[] samplesList)
+    public void setSamples(short[] samplesList)
     {
         this.samplesList = samplesList;
 

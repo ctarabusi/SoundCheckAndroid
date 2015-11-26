@@ -35,7 +35,7 @@ public class SpectrogramPresenter implements ViewEventListener
     @Override
     public void viewVisible(@NonNull Activity activity)
     {
-        readFileSubscription = Observable.from(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Byte>()
+        readFileSubscription = Observable.from(FileUtils.readAssetObjects(activity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Byte>()
         {
             private Byte firstByte;
 

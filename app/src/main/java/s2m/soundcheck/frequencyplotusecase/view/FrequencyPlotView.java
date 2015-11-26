@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import org.apache.commons.math.complex.Complex;
+import java.util.List;
 
 /**
  * Created by cta on 23/11/15.
@@ -17,8 +17,8 @@ public class FrequencyPlotView extends View
 {
     private static String TAG = FrequencyPlotView.class.getSimpleName();
 
-    private Paint     mGridPaint;
-    private Complex[] samplesList;
+    private Paint        mFrequencyPaint;
+    private List<Double> samplesList;
 
     public FrequencyPlotView(Context context)
     {
@@ -40,12 +40,12 @@ public class FrequencyPlotView extends View
 
     private void initView()
     {
-        mGridPaint = new Paint();
-        mGridPaint.setAntiAlias(false);
-        mGridPaint.setColor(Color.RED);
+        mFrequencyPaint = new Paint();
+        mFrequencyPaint.setAntiAlias(false);
+        mFrequencyPaint.setColor(Color.RED);
     }
 
-    public void setSamples(Complex[] samplesList)
+    public void setSamples(List<Double> samplesList)
     {
         this.samplesList = samplesList;
         invalidate();
@@ -63,21 +63,21 @@ public class FrequencyPlotView extends View
             return;
         }
 
-        Log.d(TAG, "samplesList size " + samplesList.length);
+        Log.d(TAG, "samplesList size " + samplesList.size());
 
         // Finding max value
         double maxValue = 0;
-        for (Complex sample : samplesList)
+        for (double sample : samplesList)
         {
-            if (maxValue < sample.abs())
+            if (maxValue < sample)
             {
-                maxValue = sample.abs();
+                maxValue = sample;
             }
         }
 
-        for (int i = 0; i < samplesList.length; i++)
+        for (int i = 0; i < samplesList.size(); i++)
         {
-            canvas.drawLine(i, measuredHeight - (float) (samplesList[i].abs() / maxValue * measuredHeight), i, measuredHeight, mGridPaint);
+            canvas.drawLine(i, measuredHeight - (float) (samplesList.get(i) / maxValue * measuredHeight), i, measuredHeight, mFrequencyPaint);
         }
     }
 }

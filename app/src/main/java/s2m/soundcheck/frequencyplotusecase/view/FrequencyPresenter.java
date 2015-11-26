@@ -5,10 +5,18 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.apache.commons.math.complex.Complex;
-import org.apache.commons.math.transform.FastFourierTransformer;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +32,7 @@ import s2m.soundcheck.utils.FileUtils;
  */
 public class FrequencyPresenter implements ViewEventListener
 {
+    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/fft";
     private static String TAG = FrequencyPresenter.class.getSimpleName();
 
     private FrequencyPlotView frequencyPlotView;
@@ -31,42 +40,21 @@ public class FrequencyPresenter implements ViewEventListener
     private Subscription readFileSubscription;
 
     @Override
-    public void viewVisible(@NonNull Activity activity)
+    public void viewVisible(@NonNull final Activity activity)
     {
-        readFileSubscription = Observable.from(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Byte>()
+        readFileSubscription = Observable.just(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<byte[]>()
         {
-            private short sample;
-            private Byte firstByte;
-
-            private List<Short> samples = new ArrayList<>();
+            List<Double> outputFFT = new ArrayList<>();
 
             @Override
             public void onCompleted()
             {
-                Short[] sampleArray = FileUtils.addZeroPaddingToPowerTwo(samples);
-
-                Observable.from(sampleArray).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Short>()
+                activity.runOnUiThread(new Runnable()
                 {
-
-                    List<Complex> inputFFTList = new ArrayList<>();
-
                     @Override
-                    public void onCompleted()
+                    public void run()
                     {
-                        Complex[] inputFFT = new Complex[inputFFTList.size()];
-                        frequencyPlotView.setSamples(new FastFourierTransformer().transform(inputFFTList.toArray(inputFFT)));
-                    }
-
-                    @Override
-                    public void onError(Throwable e)
-                    {
-
-                    }
-
-                    @Override
-                    public void onNext(Short sample)
-                    {
-                        inputFFTList.add(new Complex(sample, 0));
+                        frequencyPlotView.setSamples(outputFFT);
                     }
                 });
             }
@@ -74,21 +62,63 @@ public class FrequencyPresenter implements ViewEventListener
             @Override
             public void onError(Throwable e)
             {
-                Log.e(TAG, e.getMessage());
+
             }
 
             @Override
-            public void onNext(Byte byteRead)
+            public void onNext(byte[] sampleArray)
             {
-                if (firstByte == null)
+                outputFFT.clear();
+
+                try
                 {
-                    firstByte = byteRead;
+                    System.setProperty("http.keepAlive", "false");
+                    URL url = new URL(SERVER_URL);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setDoOutput(true);
+                    connection.setConnectTimeout(5000);
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("Connection", "Keep-Alive");
+                    connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;");
+                    OutputStream output = null;
+                    try
+                    {
+                        output = connection.getOutputStream();
+                        output.write(sampleArray);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.e(TAG, e.getMessage(), e);
+                    }
+                    finally
+                    {
+                        if (output != null) try
+                        {
+                            output.close();
+                        }
+                        catch (IOException e)
+                        {
+                            Log.e(TAG, e.getMessage(), e);
+                        }
+                    }
+
+                    int status = connection.getResponseCode();
+                    Log.d(TAG, "Status : " + status);
+
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                    String inputLine;
+                    while ((inputLine = in.readLine()) != null)
+                    {
+                        outputFFT.add(Double.parseDouble(inputLine));
+                    }
+                    in.close();
+
+                    connection.disconnect();
                 }
-                else
+                catch (IOException e)
                 {
-                    sample = ByteBuffer.wrap(new byte[]{firstByte, byteRead}).order(ByteOrder.LITTLE_ENDIAN).getShort();
-                    firstByte = null;
-                    samples.add(sample);
+                    Log.e(TAG, e.getMessage(), e);
                 }
             }
         });

@@ -6,6 +6,7 @@ import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,18 +31,11 @@ public class WaveformPresenter implements ViewEventListener
     @Override
     public void viewVisible(@NonNull Activity activity)
     {
-        readFileSubscription = Observable.from(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Byte>()
+        readFileSubscription = Observable.just(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<byte[]>()
         {
-            private Byte firstByte;
-
-            private List<Short> samples = new ArrayList<>();
-
             @Override
             public void onCompleted()
             {
-                Short[] sampleArray = new Short[samples.size()];
-
-                waveformPlotView.setSamples(samples.toArray(sampleArray));
             }
 
             @Override
@@ -51,18 +45,14 @@ public class WaveformPresenter implements ViewEventListener
             }
 
             @Override
-            public void onNext(Byte byteRead)
+            public void onNext(byte[] bytesRead)
             {
-                if (firstByte == null)
-                {
-                    firstByte = byteRead;
-                }
-                else
-                {
-                    short sample = ByteBuffer.wrap(new byte[]{firstByte, byteRead}).order(ByteOrder.LITTLE_ENDIAN).getShort();
-                    firstByte = null;
-                    samples.add(sample);
-                }
+                short[] sampleArray = new short[bytesRead.length / 2];
+
+                ShortBuffer shortBuffer = ByteBuffer.wrap(bytesRead).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+                shortBuffer.get(sampleArray);
+
+                waveformPlotView.setSamples(sampleArray);
             }
         });
     }
