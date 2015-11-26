@@ -56,6 +56,7 @@ public class FrequencyPlotView extends View
     {
         super.onDraw(canvas);
 
+        int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
 
         if (samplesList == null)
@@ -75,9 +76,14 @@ public class FrequencyPlotView extends View
             }
         }
 
-        for (int i = 0; i < samplesList.size(); i++)
+        int i = 0;
+        while (i < measuredWidth)
         {
-            canvas.drawLine(i, measuredHeight - (float) (samplesList.get(i) / maxValue * measuredHeight), i, measuredHeight, mFrequencyPaint);
+            float progress = (float) i / measuredWidth;
+            int normalizeTimeAxis = (int) (progress * samplesList.size());
+            
+            canvas.drawLine(i, measuredHeight - (float) (samplesList.get(normalizeTimeAxis) / maxValue * measuredHeight), i, measuredHeight, mFrequencyPaint);
+            i++;
         }
     }
 }

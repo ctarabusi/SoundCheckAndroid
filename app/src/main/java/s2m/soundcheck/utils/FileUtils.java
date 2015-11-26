@@ -56,20 +56,6 @@ public class FileUtils
         return byteArray;
     }
 
-    public static Byte[] readAssetObjects(@NonNull Activity activity)
-    {
-        byte[] byteArray = readAsset(activity);
-
-        Byte[] byteObjects = new Byte[byteArray.length];
-
-        int i = 0;
-        for (byte b : byteArray)
-        {
-            byteObjects[i++] = b;
-        }
-        return byteObjects;
-    }
-
     public static byte[] convertStreamToByteArray(InputStream is) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

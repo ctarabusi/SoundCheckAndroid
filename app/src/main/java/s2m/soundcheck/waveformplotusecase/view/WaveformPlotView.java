@@ -104,7 +104,10 @@ public class WaveformPlotView extends View
                 canvas.drawText(String.valueOf(i), i + 20, measuredHeight - 20, mTimecodePaint);
             }
 
-            valueNormalized = (double) samplesList[i] / maxValue;
+            float progress = (float) i / measuredWidth;
+            int normalizeTimeAxis = (int) (progress * samplesList.length);
+
+            valueNormalized = (double) samplesList[normalizeTimeAxis] / maxValue;
             scaledSample = centerHeight - (int) (valueNormalized * centerHeight);
 
             canvas.drawLine(previous, previousSample, i, scaledSample, mGridPaint);

@@ -18,7 +18,7 @@ public class SpectrogramView extends View
     private static String TAG = SpectrogramView.class.getSimpleName();
 
     private Paint       mGridPaint;
-    private Complex[][] samplesList;
+    private double[][] samplesList;
 
 
     public SpectrogramView(Context context)
@@ -46,7 +46,7 @@ public class SpectrogramView extends View
         mGridPaint.setColor(Color.RED);
     }
 
-    public void setSamples(Complex[][] samplesList)
+    public void setSamples(double[][] samplesList)
     {
         this.samplesList = samplesList;
         invalidate();
@@ -77,7 +77,7 @@ public class SpectrogramView extends View
                 // To get the magnitude of the sound at a given frequency slice
                 // get the abs() from the complex number.
                 // In this case I use Math.log to get a more managable number (used for color)
-                magnitude = Math.log(samplesList[i][freq].abs() + 1);
+                magnitude = Math.log(samplesList[i][freq] + 1);
 
                 // The more blue in the color the more intensity for a given frequency point:
                 mGridPaint.setColor(Color.rgb(0, (int) magnitude * 10, (int) magnitude * 20));

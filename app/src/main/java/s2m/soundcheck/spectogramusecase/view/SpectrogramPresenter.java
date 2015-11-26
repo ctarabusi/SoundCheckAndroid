@@ -4,19 +4,14 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import org.apache.commons.math.complex.Complex;
-import org.apache.commons.math.transform.FastFourierTransformer;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import s2m.soundcheck.frequencyplotusecase.view.FrequencyPresenter;
 import s2m.soundcheck.utils.FileUtils;
 
 /**
@@ -33,48 +28,23 @@ public class SpectrogramPresenter implements ViewEventListener
     private Subscription readFileSubscription;
 
     @Override
-    public void viewVisible(@NonNull Activity activity)
+    public void viewVisible(@NonNull final Activity activity)
     {
-        readFileSubscription = Observable.from(FileUtils.readAssetObjects(activity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Byte>()
+        readFileSubscription = Observable.just(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<byte[]>()
         {
-            private Byte firstByte;
-
-            private List<Short> samples = new ArrayList<>();
+            double[][] outputSpectrogram = new double[0][0];
 
             @Override
             public void onCompleted()
             {
-                Short[] sampleArray = new Short[samples.size()];
-                samples.toArray(sampleArray);
-
-                final int totalSize = sampleArray.length;
-
-                int amountPossible = totalSize / CHUNK_SIZE;
-
-                Complex[][] results = new Complex[amountPossible][];
-
-                for (int times = 0; times < amountPossible; times++)
+                activity.runOnUiThread(new Runnable()
                 {
-                    Complex[] complex = new Complex[CHUNK_SIZE];
-                    for (int i = 0; i < CHUNK_SIZE; i++)
+                    @Override
+                    public void run()
                     {
-                        //Put the time domain data into a complex number with imaginary part as 0:
-                        Short sampleValue = sampleArray[(times * CHUNK_SIZE) + i];
-                        double sampleWithWindowing = FileUtils.hammingWindow(totalSize, times * CHUNK_SIZE + i) * (sampleValue != null ? sampleValue : 0);
-                        complex[i] = new Complex(sampleWithWindowing, 0);
+                        spectrogramView.setSamples(outputSpectrogram);
                     }
-                    //Perform FFT analysis on the chunk:
-                    try
-                    {
-                        results[times] = new FastFourierTransformer().transform(complex);
-                    }
-                    catch (IllegalArgumentException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-
-                spectrogramView.setSamples(results);
+                });
             }
 
             @Override
@@ -84,19 +54,21 @@ public class SpectrogramPresenter implements ViewEventListener
             }
 
             @Override
-            public void onNext(Byte byteRead)
+            public void onNext(byte[] bytesRead)
             {
-                if (firstByte == null)
-                {
-                    firstByte = byteRead;
-                }
-                else
-                {
-                    short sample = ByteBuffer.wrap(new byte[]{firstByte, byteRead}).order(ByteOrder.LITTLE_ENDIAN).getShort();
-                    firstByte = null;
-                    samples.add(sample);
-                }
+                final int totalSize = bytesRead.length;
 
+                int amountPossible = totalSize / CHUNK_SIZE;
+
+                outputSpectrogram = new double[amountPossible][];
+
+                for (int times = 0; times < amountPossible; times++)
+                {
+                    int baseIndex = times * CHUNK_SIZE;
+                    List<Double> outputFFT = FrequencyPresenter.requestFFT(Arrays.copyOfRange(bytesRead, baseIndex, baseIndex + CHUNK_SIZE));
+
+                    outputSpectrogram[times] = convertDoubles(outputFFT);
+                }
             }
         });
     }
@@ -111,6 +83,16 @@ public class SpectrogramPresenter implements ViewEventListener
     public void setSpectrogramView(@NonNull SpectrogramView spectrogramView)
     {
         this.spectrogramView = spectrogramView;
+    }
+
+    public static double[] convertDoubles(List<Double> doubles)
+    {
+        double[] ret = new double[doubles.size()];
+        for (int i=0; i < ret.length; i++)
+        {
+            ret[i] = doubles.get(i);
+        }
+        return ret;
     }
 
 }
