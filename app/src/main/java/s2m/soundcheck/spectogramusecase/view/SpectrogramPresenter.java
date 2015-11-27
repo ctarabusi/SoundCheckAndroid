@@ -8,14 +8,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Arrays;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
-import s2m.soundcheck.utils.FileUtils;
+import s2m.soundcheck.utils.Helper;
 
 /**
  * Created by cta on 18/09/15.
@@ -26,8 +25,6 @@ public class SpectrogramPresenter implements ViewEventListener
 
     public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/spectrogram";
 
-    private static int CHUNK_SIZE = 4096;
-
     private SpectrogramView spectrogramView;
 
     private Subscription readFileSubscription;
@@ -35,7 +32,7 @@ public class SpectrogramPresenter implements ViewEventListener
     @Override
     public void viewVisible(@NonNull final Activity activity)
     {
-        readFileSubscription = Observable.just(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<byte[]>()
+        readFileSubscription = Observable.just(Helper.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<byte[]>()
         {
             double[][] outputSpectrogram = new double[0][0];
 
@@ -83,12 +80,7 @@ public class SpectrogramPresenter implements ViewEventListener
         double[][] outputFFT = null;
         try
         {
-            System.setProperty("http.keepAlive", "false");
-            URL url = new URL(SERVER_URL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Connection", "Keep-Alive");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;");
+            HttpURLConnection connection = Helper.buildURLConnection(SERVER_URL);
             OutputStream output = null;
             try
             {
@@ -133,4 +125,6 @@ public class SpectrogramPresenter implements ViewEventListener
 
         return outputFFT;
     }
+
+
 }

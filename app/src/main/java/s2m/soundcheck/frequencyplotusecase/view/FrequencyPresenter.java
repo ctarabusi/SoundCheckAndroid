@@ -4,33 +4,26 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import org.apache.commons.math.complex.Complex;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
-import s2m.soundcheck.utils.FileUtils;
+import s2m.soundcheck.utils.Helper;
 
 /**
  * Created by cta on 18/09/15.
  */
 public class FrequencyPresenter implements ViewEventListener
 {
-    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/fft";
-
     private static String TAG = FrequencyPresenter.class.getSimpleName();
+
+    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/fft";
 
     private FrequencyPlotView frequencyPlotView;
 
@@ -39,7 +32,7 @@ public class FrequencyPresenter implements ViewEventListener
     @Override
     public void viewVisible(@NonNull final Activity activity)
     {
-        readFileSubscription = Observable.just(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<byte[]>()
+        readFileSubscription = Observable.just(Helper.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<byte[]>()
         {
             double[] outputFFT = null;
 
@@ -87,12 +80,8 @@ public class FrequencyPresenter implements ViewEventListener
         double[] outputFFT = null;
         try
         {
-            System.setProperty("http.keepAlive", "false");
-            URL url = new URL(SERVER_URL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Connection", "Keep-Alive");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;");
+            HttpURLConnection connection = Helper.buildURLConnection(SERVER_URL);
+
             OutputStream output = null;
             try
             {

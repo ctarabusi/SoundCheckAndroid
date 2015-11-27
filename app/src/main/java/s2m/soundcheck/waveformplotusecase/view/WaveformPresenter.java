@@ -7,15 +7,13 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import s2m.soundcheck.utils.FileUtils;
+import s2m.soundcheck.utils.Helper;
 
 /**
  * Created by cta on 18/09/15.
@@ -31,7 +29,7 @@ public class WaveformPresenter implements ViewEventListener
     @Override
     public void viewVisible(@NonNull Activity activity)
     {
-        readFileSubscription = Observable.just(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<byte[]>()
+        readFileSubscription = Observable.just(Helper.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<byte[]>()
         {
             @Override
             public void onCompleted()

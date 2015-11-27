@@ -8,17 +8,17 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import s2m.soundcheck.R;
 
 /**
  * Created by cta on 25/11/15.
  */
-public class FileUtils
+public class Helper
 {
-    private static String TAG = FileUtils.class.getSimpleName();
+    private static String TAG = Helper.class.getSimpleName();
 
 
     public static byte[] readAsset(@NonNull Activity activity)
@@ -30,7 +30,7 @@ public class FileUtils
         {
             // File recordedFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), RecordInteractor.RECORDED_FILE_NAME);
             // inputStream = new FileInputStream(recordedFile);
-            inputStream = res.openRawResource(R.raw.whistle);
+            inputStream = res.openRawResource(R.raw.piano_converted);
 
             byteArray = convertStreamToByteArray(inputStream);
         }
@@ -70,5 +70,16 @@ public class FileUtils
             baos.write(buff, 0, i);
         }
         return baos.toByteArray(); // be sure to close InputStream in calling function
+    }
+
+    @NonNull
+    public static HttpURLConnection buildURLConnection(String serverURL) throws IOException
+    {
+        URL url = new URL(serverURL);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Connection", "Keep-Alive");
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;");
+        return connection;
     }
 }
