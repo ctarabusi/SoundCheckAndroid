@@ -65,9 +65,7 @@ public class SpectrogramPresenter implements ViewEventListener
                 for (int times = 0; times < amountPossible; times++)
                 {
                     int baseIndex = times * CHUNK_SIZE;
-                    List<Double> outputFFT = FrequencyPresenter.requestFFT(Arrays.copyOfRange(bytesRead, baseIndex, baseIndex + CHUNK_SIZE));
-
-                    outputSpectrogram[times] = convertDoubles(outputFFT);
+                    outputSpectrogram[times] = FrequencyPresenter.requestFFT(Arrays.copyOfRange(bytesRead, baseIndex, baseIndex + CHUNK_SIZE));
                 }
             }
         });
@@ -83,16 +81,6 @@ public class SpectrogramPresenter implements ViewEventListener
     public void setSpectrogramView(@NonNull SpectrogramView spectrogramView)
     {
         this.spectrogramView = spectrogramView;
-    }
-
-    public static double[] convertDoubles(List<Double> doubles)
-    {
-        double[] ret = new double[doubles.size()];
-        for (int i=0; i < ret.length; i++)
-        {
-            ret[i] = doubles.get(i);
-        }
-        return ret;
     }
 
 }

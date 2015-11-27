@@ -30,7 +30,7 @@ public class FileUtils
         {
             // File recordedFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), RecordInteractor.RECORDED_FILE_NAME);
             // inputStream = new FileInputStream(recordedFile);
-            inputStream = res.openRawResource(R.raw.whistle);
+            inputStream = res.openRawResource(R.raw.piano_converted);
 
             byteArray = convertStreamToByteArray(inputStream);
         }
@@ -70,14 +70,5 @@ public class FileUtils
             baos.write(buff, 0, i);
         }
         return baos.toByteArray(); // be sure to close InputStream in calling function
-    }
-
-    public static float hammingWindow(int length, int index)
-    {
-        if (index > length)
-        {
-            return 0;
-        }
-        return 0.54f - 0.46f * (float) Math.cos(Math.PI * 2 * index / (length - 1));
     }
 }

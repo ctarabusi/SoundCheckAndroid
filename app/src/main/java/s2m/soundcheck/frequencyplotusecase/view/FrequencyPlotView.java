@@ -8,8 +8,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import java.util.List;
-
 /**
  * Created by cta on 23/11/15.
  */
@@ -17,8 +15,8 @@ public class FrequencyPlotView extends View
 {
     private static String TAG = FrequencyPlotView.class.getSimpleName();
 
-    private Paint        mFrequencyPaint;
-    private List<Double> samplesList;
+    private Paint    mFrequencyPaint;
+    private double[] samplesList;
 
     public FrequencyPlotView(Context context)
     {
@@ -45,7 +43,7 @@ public class FrequencyPlotView extends View
         mFrequencyPaint.setColor(Color.RED);
     }
 
-    public void setSamples(List<Double> samplesList)
+    public void setSamples(double[] samplesList)
     {
         this.samplesList = samplesList;
         invalidate();
@@ -59,31 +57,38 @@ public class FrequencyPlotView extends View
         int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
 
-        if (samplesList == null)
+        if (samplesList == null || samplesList.length == 0)
         {
             return;
         }
 
-        Log.d(TAG, "samplesList size " + samplesList.size());
+        Log.d(TAG, "samplesList size " + samplesList.length);
 
         // Finding max value
         double maxValue = 0;
-        for (double sample : samplesList)
+        int index = 0;
+        while (index < measuredWidth)
         {
-            if (maxValue < sample)
+            float progress = (float) index / measuredWidth;
+            int normalizeTimeAxis = (int) (progress * samplesList.length);
+
+            double partialValue = samplesList[normalizeTimeAxis];
+            if (maxValue < partialValue)
             {
-                maxValue = sample;
+                maxValue = partialValue;
             }
+            index++;
         }
 
-        int i = 0;
-        while (i < measuredWidth)
+        index = 0;
+        while (index < measuredWidth)
         {
-            float progress = (float) i / measuredWidth;
-            int normalizeTimeAxis = (int) (progress * samplesList.size());
-            
-            canvas.drawLine(i, measuredHeight - (float) (samplesList.get(normalizeTimeAxis) / maxValue * measuredHeight), i, measuredHeight, mFrequencyPaint);
-            i++;
+            float progress = (float) index / measuredWidth;
+            int normalizeTimeAxis = (int) (progress * samplesList.length);
+
+            double partialValue = samplesList[normalizeTimeAxis]  * measuredHeight;
+            canvas.drawLine(index, measuredHeight - (float) (partialValue  / maxValue ), index, measuredHeight, mFrequencyPaint);
+            index++;
         }
     }
 }

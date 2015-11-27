@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import org.apache.commons.math.complex.Complex;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import rx.Observable;
@@ -37,7 +41,7 @@ public class FrequencyPresenter implements ViewEventListener
     {
         readFileSubscription = Observable.just(FileUtils.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<byte[]>()
         {
-            List<Double> outputFFT = new ArrayList<>();
+            double[] outputFFT = null;
 
             @Override
             public void onCompleted()
@@ -61,7 +65,7 @@ public class FrequencyPresenter implements ViewEventListener
             @Override
             public void onNext(byte[] sampleArray)
             {
-                outputFFT = FrequencyPresenter.requestFFT(sampleArray);
+                outputFFT = FrequencyPresenter.requestFFT(Arrays.copyOfRange(sampleArray, 200, sampleArray.length));
             }
         });
     }
@@ -78,9 +82,9 @@ public class FrequencyPresenter implements ViewEventListener
         this.frequencyPlotView = frequencyPlotView;
     }
 
-    public static List<Double> requestFFT(byte[] sampleArray)
+    public static double[] requestFFT(byte[] sampleArray)
     {
-        List<Double> outputFFT = new ArrayList<>();
+        double[] outputFFT = null;
         try
         {
             System.setProperty("http.keepAlive", "false");
@@ -114,13 +118,10 @@ public class FrequencyPresenter implements ViewEventListener
             int status = connection.getResponseCode();
             Log.d(TAG, "Status : " + status);
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            ObjectInputStream in = new ObjectInputStream(connection.getInputStream());
 
-            String inputLine;
-            while ((inputLine = in.readLine()) != null)
-            {
-                outputFFT.add(Double.parseDouble(inputLine));
-            }
+            outputFFT = (double[]) in.readObject();
+
             in.close();
 
             connection.disconnect();
@@ -129,6 +130,11 @@ public class FrequencyPresenter implements ViewEventListener
         {
             Log.e(TAG, e.getMessage(), e);
         }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
         return outputFFT;
     }
 }
