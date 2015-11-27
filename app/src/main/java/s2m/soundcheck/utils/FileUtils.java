@@ -30,7 +30,7 @@ public class FileUtils
         {
             // File recordedFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), RecordInteractor.RECORDED_FILE_NAME);
             // inputStream = new FileInputStream(recordedFile);
-            inputStream = res.openRawResource(R.raw.piano_converted);
+            inputStream = res.openRawResource(R.raw.whistle);
 
             byteArray = convertStreamToByteArray(inputStream);
         }

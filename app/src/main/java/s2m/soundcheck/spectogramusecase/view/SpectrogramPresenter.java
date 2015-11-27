@@ -4,14 +4,17 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
-import s2m.soundcheck.frequencyplotusecase.view.FrequencyPresenter;
 import s2m.soundcheck.utils.FileUtils;
 
 /**
@@ -20,6 +23,8 @@ import s2m.soundcheck.utils.FileUtils;
 public class SpectrogramPresenter implements ViewEventListener
 {
     private static String TAG = SpectrogramPresenter.class.getSimpleName();
+
+    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/spectrogram";
 
     private static int CHUNK_SIZE = 4096;
 
@@ -56,17 +61,7 @@ public class SpectrogramPresenter implements ViewEventListener
             @Override
             public void onNext(byte[] bytesRead)
             {
-                final int totalSize = bytesRead.length;
-
-                int amountPossible = totalSize / CHUNK_SIZE;
-
-                outputSpectrogram = new double[amountPossible][];
-
-                for (int times = 0; times < amountPossible; times++)
-                {
-                    int baseIndex = times * CHUNK_SIZE;
-                    outputSpectrogram[times] = FrequencyPresenter.requestFFT(Arrays.copyOfRange(bytesRead, baseIndex, baseIndex + CHUNK_SIZE));
-                }
+                outputSpectrogram = requestSpectrogram(Arrays.copyOfRange(bytesRead, 44, bytesRead.length));
             }
         });
     }
@@ -83,4 +78,59 @@ public class SpectrogramPresenter implements ViewEventListener
         this.spectrogramView = spectrogramView;
     }
 
+    public static double[][] requestSpectrogram(byte[] sampleArray)
+    {
+        double[][] outputFFT = null;
+        try
+        {
+            System.setProperty("http.keepAlive", "false");
+            URL url = new URL(SERVER_URL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Connection", "Keep-Alive");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;");
+            OutputStream output = null;
+            try
+            {
+                output = connection.getOutputStream();
+                output.write(sampleArray);
+            }
+            catch (Exception e)
+            {
+                Log.e(TAG, e.getMessage(), e);
+            }
+            finally
+            {
+                if (output != null) try
+                {
+                    output.close();
+                }
+                catch (IOException e)
+                {
+                    Log.e(TAG, e.getMessage(), e);
+                }
+            }
+
+            int status = connection.getResponseCode();
+            Log.d(TAG, "Status : " + status);
+
+            ObjectInputStream in = new ObjectInputStream(connection.getInputStream());
+
+            outputFFT = (double[][]) in.readObject();
+
+            in.close();
+
+            connection.disconnect();
+        }
+        catch (IOException e)
+        {
+            Log.e(TAG, e.getMessage(), e);
+        }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
+        return outputFFT;
+    }
 }

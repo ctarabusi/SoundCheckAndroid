@@ -65,7 +65,7 @@ public class FrequencyPresenter implements ViewEventListener
             @Override
             public void onNext(byte[] sampleArray)
             {
-                outputFFT = FrequencyPresenter.requestFFT(Arrays.copyOfRange(sampleArray, 200, sampleArray.length));
+                outputFFT = requestFFT(Arrays.copyOfRange(sampleArray, 44, sampleArray.length));
             }
         });
     }
