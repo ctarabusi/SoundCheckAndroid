@@ -14,8 +14,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.Observer;
+import rx.schedulers.Schedulers;
+import s2m.soundcheck.utils.Helper;
 
 /**
  * Created by cta on 17/09/15.
@@ -23,6 +30,8 @@ import javax.inject.Inject;
 public class RecordInteractor
 {
     private static final String TAG = RecordInteractor.class.getSimpleName();
+
+    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/checksound";
 
     public final static String RECORDED_FILE_NAME      = "Recording.wav";
     public final static String RECORDED_TEMP_FILE_NAME = "RecordingTemp.wav";
@@ -109,7 +118,7 @@ public class RecordInteractor
             {
                 writeAudioDataToFile();
             }
-        } , "AudioRecorder Thread");
+        }, "AudioRecorder Thread");
 
         recordingThread.start();
 
@@ -129,8 +138,29 @@ public class RecordInteractor
             recordingThread = null;
         }
 
-        copyWaveFile(getTempFilename(), getFilename());
-        deleteTempFile();
+        Observable.empty().subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer()
+        {
+
+            @Override
+            public void onCompleted()
+            {
+                copyWaveFile(getTempFilename(), getFilename());
+                deleteTempFile();
+            }
+
+            @Override
+            public void onError(Throwable e)
+            {
+
+            }
+
+            @Override
+            public void onNext(Object o)
+            {
+
+            }
+        });
+
 //
 //        try
 //        {
@@ -206,8 +236,9 @@ public class RecordInteractor
 
     private void copyWaveFile(File inFilename, File outFilename)
     {
-        FileInputStream in;
-        FileOutputStream out;
+        FileInputStream in = null;
+        FileOutputStream outFile = null;
+        OutputStream outputStream = null;
         long totalAudioLen = 0;
         long totalDataLen = totalAudioLen + 36;
         long longSampleRate = RECORDER_SAMPLERATE;
@@ -219,29 +250,47 @@ public class RecordInteractor
         try
         {
             in = new FileInputStream(inFilename);
-            out = new FileOutputStream(outFilename);
+            outFile = new FileOutputStream(outFilename);
             totalAudioLen = in.getChannel().size();
             totalDataLen = totalAudioLen + 36;
 
             Log.d(TAG, "File size: " + totalDataLen);
 
-            WriteWaveFileHeader(out, totalAudioLen, totalDataLen, longSampleRate, channels, byteRate);
+            writeWaveFileHeader(outFile, totalAudioLen, totalDataLen, longSampleRate, channels, byteRate);
+
+            HttpURLConnection connection = Helper.buildURLConnection(SERVER_URL);
+
+            outputStream = connection.getOutputStream();
 
             while (in.read(data) != -1)
             {
-                out.write(data);
+                outFile.write(data);
+                outputStream.write(data);
             }
 
-            in.close();
-            out.close();
+            int status = connection.getResponseCode();
+            Log.d(TAG, "Status : " + status);
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
+        finally
+        {
+            try
+            {
+                in.close();
+                outFile.close();
+                outputStream.close();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
-    private void WriteWaveFileHeader(FileOutputStream out, long totalAudioLen, long totalDataLen, long longSampleRate, int channels, long byteRate) throws IOException
+    private void writeWaveFileHeader(FileOutputStream out, long totalAudioLen, long totalDataLen, long longSampleRate, int channels, long byteRate) throws IOException
     {
 
         byte[] header = new byte[44];

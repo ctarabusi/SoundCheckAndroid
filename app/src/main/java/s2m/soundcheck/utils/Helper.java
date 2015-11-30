@@ -2,16 +2,20 @@ package s2m.soundcheck.utils;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import s2m.soundcheck.R;
+import s2m.soundcheck.recordingusecase.interactor.RecordInteractor;
 
 /**
  * Created by cta on 25/11/15.
@@ -28,9 +32,9 @@ public class Helper
         Resources res = activity.getResources();
         try
         {
-            // File recordedFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), RecordInteractor.RECORDED_FILE_NAME);
-            // inputStream = new FileInputStream(recordedFile);
-            inputStream = res.openRawResource(R.raw.piano_converted);
+            File recordedFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), RecordInteractor.RECORDED_FILE_NAME);
+            inputStream = new FileInputStream(recordedFile);
+           // inputStream = res.openRawResource(R.raw.whistle);
 
             byteArray = convertStreamToByteArray(inputStream);
         }

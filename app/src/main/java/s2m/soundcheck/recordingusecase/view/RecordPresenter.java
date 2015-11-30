@@ -1,12 +1,19 @@
 package s2m.soundcheck.recordingusecase.view;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 
 import javax.inject.Inject;
 
 import s2m.soundcheck.R;
 import s2m.soundcheck.recordingusecase.interactor.DataChangeListener;
 import s2m.soundcheck.recordingusecase.interactor.RecordInteractor;
+import s2m.soundcheck.utils.Helper;
 
 /**
  * Created by cta on 17/09/15.
