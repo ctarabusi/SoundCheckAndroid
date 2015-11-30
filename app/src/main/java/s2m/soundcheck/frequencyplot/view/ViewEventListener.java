@@ -1,4 +1,4 @@
-package s2m.soundcheck.spectogramusecase.view;
+package s2m.soundcheck.frequencyplot.view;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
@@ -8,7 +8,8 @@ import android.support.annotation.NonNull;
  */
 public interface ViewEventListener
 {
-    void setSpectrogramView(@NonNull SpectrogramView spectrogramView);
+
+    void setFrequencyPlot(@NonNull FrequencyPlotView frequencyPlotView);
 
     void viewVisible(@NonNull Activity activity);
 

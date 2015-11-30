@@ -3,7 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <s2m.soundcheck.spectogramusecase.view.SpectrogramView
+    <s2m.soundcheck.spectogram.view.SpectrogramView
         android:id="@+id/spectrogram_plot_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

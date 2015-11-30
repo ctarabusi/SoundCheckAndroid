@@ -5,9 +5,10 @@ import android.support.annotation.UiThread;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-import s2m.soundcheck.frequencyplotusecase.view.FrequencyFragment;
-import s2m.soundcheck.spectogramusecase.view.SpectrogramFragment;
-import s2m.soundcheck.recordingusecase.view.RecordFragment;
+import s2m.soundcheck.comparison.view.CompareFragment;
+import s2m.soundcheck.frequencyplot.view.FrequencyFragment;
+import s2m.soundcheck.recording.view.RecordFragment;
+import s2m.soundcheck.spectogram.view.SpectrogramFragment;
 import s2m.soundcheck.waveformplotusecase.view.WaveformFragment;
 
 /**
@@ -17,7 +18,7 @@ public class Router
 {
     public enum NavigationPaths
     {
-        RECORD, WAVEFORM, FREQUENCY, SPECTOGRAM
+        RECORD, COMPARE, WAVEFORM, FREQUENCY, SPECTOGRAM
     }
 
     private static Router instance = null;
@@ -40,6 +41,10 @@ public class Router
         {
             case RECORD:
                 fragment = new RecordFragment();
+                break;
+
+            case COMPARE:
+                fragment = new CompareFragment();
                 break;
 
             case FREQUENCY:

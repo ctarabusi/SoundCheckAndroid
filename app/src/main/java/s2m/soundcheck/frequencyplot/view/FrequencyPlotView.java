@@ -1,4 +1,4 @@
-package s2m.soundcheck.frequencyplotusecase.view;
+package s2m.soundcheck.frequencyplot.view;
 
 import android.content.Context;
 import android.graphics.Canvas;

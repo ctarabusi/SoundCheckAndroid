@@ -1,19 +1,13 @@
-package s2m.soundcheck.recordingusecase.view;
+package s2m.soundcheck.recording.view;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 
 import javax.inject.Inject;
 
 import s2m.soundcheck.R;
-import s2m.soundcheck.recordingusecase.interactor.DataChangeListener;
-import s2m.soundcheck.recordingusecase.interactor.RecordInteractor;
-import s2m.soundcheck.utils.Helper;
+import s2m.soundcheck.recording.interactor.DataChangeListener;
+import s2m.soundcheck.recording.interactor.RecordInteractor;
 
 /**
  * Created by cta on 17/09/15.
@@ -22,28 +16,26 @@ public class RecordPresenter implements ViewEventListener, DataChangeListener
 {
     private UpdateViewInterface output;
 
-    private RecordInteractor interactor;
+    private RecordInteractor recordInteractor;
 
     private boolean isRecording;
 
     @Inject
-    public RecordPresenter(RecordInteractor interactor)
+    public RecordPresenter(Context applicationContext)
     {
-        this.interactor = interactor;
+        recordInteractor = new RecordInteractor(applicationContext);
 
-        this.interactor.setOutput(this);
+        this.recordInteractor.setOutput(this);
     }
 
     @Override
     public void viewVisible()
     {
-    //    interactor.initRecorder();
     }
 
     @Override
     public void viewGone()
     {
-    //    interactor.releaseRecorder();
     }
 
     @Override
@@ -57,7 +49,7 @@ public class RecordPresenter implements ViewEventListener, DataChangeListener
     {
         if (!isRecording)
         {
-            interactor.startRecording();
+            recordInteractor.startRecording();
 
             isRecording = true;
 
@@ -71,7 +63,7 @@ public class RecordPresenter implements ViewEventListener, DataChangeListener
     {
         if (isRecording)
         {
-            interactor.stopRecording();
+            recordInteractor.stopRecording();
 
             isRecording = false;
             output.stopChronometer();

@@ -101,6 +101,10 @@ public class MainActivity extends ActionBarActivity
         {
             navigateTo(Router.NavigationPaths.RECORD);
         }
+        else if (menuId == R.id.navDrawerCompare)
+        {
+            navigateTo(Router.NavigationPaths.COMPARE);
+        }
         else if (menuId == R.id.navDrawerWaveform)
         {
             navigateTo(Router.NavigationPaths.WAVEFORM);

@@ -1,4 +1,4 @@
-package s2m.soundcheck.recordingusecase.interactor;
+package s2m.soundcheck.recording.interactor;
 
 /**
  * Created by cta on 17/09/15.

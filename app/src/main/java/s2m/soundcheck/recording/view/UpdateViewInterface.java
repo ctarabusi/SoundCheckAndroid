@@ -1,4 +1,4 @@
-package s2m.soundcheck.recordingusecase.view;
+package s2m.soundcheck.recording.view;
 
 import android.support.annotation.StringRes;
 

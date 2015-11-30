@@ -1,4 +1,4 @@
-package s2m.soundcheck.recordingusecase.interactor;
+package s2m.soundcheck.recording.interactor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -31,27 +31,24 @@ public class RecordInteractor
 {
     private static final String TAG = RecordInteractor.class.getSimpleName();
 
-    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/checksound";
+    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/recording";
 
-    public final static String RECORDED_FILE_NAME      = "Recording.wav";
-    public final static String RECORDED_TEMP_FILE_NAME = "RecordingTemp.wav";
-
-    private MediaRecorder audioRecorder;
+    public final static    String RECORDED_FILE_NAME      = "Recording.wav";
+    protected final static String RECORDED_TEMP_FILE_NAME = "temp.wav";
 
     private DataChangeListener dataChangeListener;
 
-    private Context applicationContext;
-    private File    output;
+    protected Context applicationContext;
 
     private static final int RECORDER_BPP            = 16;
     private static final int RECORDER_SAMPLERATE     = 44100;
     private static final int RECORDER_CHANNELS       = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 
-    private AudioRecord recorder        = null;
-    private int         bufferSize      = 4096;
-    private Thread      recordingThread = null;
-    private boolean     isRecording     = false;
+    protected AudioRecord recorder        = null;
+    protected int         bufferSize      = 4096;
+    protected Thread      recordingThread = null;
+    protected boolean     isRecording     = false;
 
     @Inject
     public RecordInteractor(Context applicationContext)
@@ -64,40 +61,19 @@ public class RecordInteractor
         this.dataChangeListener = dataChangeListener;
     }
 
-//    public void initRecorder()
-//    {
-//        output = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), RECORDED_FILE_NAME);
-//    }
-
-    private File getFilename()
+    protected File getFilename()
     {
 
         return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), RECORDED_FILE_NAME);
     }
 
-    private File getTempFilename()
+    protected File getTempFilename()
     {
         return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), RECORDED_TEMP_FILE_NAME);
     }
 
     public void startRecording()
     {
-//        audioRecorder = new MediaRecorder();
-//        audioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-//        audioRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-//        audioRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-//        audioRecorder.setOutputFile(output.getAbsolutePath());
-//
-//        try
-//        {
-//            audioRecorder.prepare();
-//            audioRecorder.start();
-//        } catch (IllegalStateException | IOException e)
-//        {
-//            Log.e(TAG, e.getMessage(), e);
-//            dataChangeListener.exceptionFromInteractor();
-//        }
-
         bufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
 
         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
@@ -161,26 +137,13 @@ public class RecordInteractor
             }
         });
 
-//
-//        try
-//        {
-//            audioRecorder.stop();
-//            audioRecorder.reset();
-//            audioRecorder.release();
-//            audioRecorder = null;
-//        } catch (IllegalStateException e)
-//        {
-//            Log.e(TAG, e.getMessage(), e);
-//            dataChangeListener.exceptionFromInteractor();
-//        }
-
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         intent.setData(Uri.fromFile(getFilename()));
         applicationContext.sendBroadcast(intent);
     }
 
 
-    private void writeAudioDataToFile()
+    protected void writeAudioDataToFile()
     {
         byte data[] = new byte[bufferSize];
         FileOutputStream os = null;
@@ -191,13 +154,11 @@ public class RecordInteractor
         }
         catch (FileNotFoundException e)
         {
-// TODO Auto-generated catch block
             e.printStackTrace();
         }
 
         int read = 0;
-
-        if (null != os)
+        if (os != null)
         {
             while (isRecording)
             {
@@ -222,15 +183,14 @@ public class RecordInteractor
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                Log.e(TAG, e.getMessage(), e);
             }
         }
     }
 
-    private void deleteTempFile()
+    protected void deleteTempFile()
     {
         File file = getTempFilename();
-
         file.delete();
     }
 
@@ -239,8 +199,8 @@ public class RecordInteractor
         FileInputStream in = null;
         FileOutputStream outFile = null;
         OutputStream outputStream = null;
-        long totalAudioLen = 0;
-        long totalDataLen = totalAudioLen + 36;
+        long totalAudioLen;
+        long totalDataLen;
         long longSampleRate = RECORDER_SAMPLERATE;
         int channels = 1;
         long byteRate = RECORDER_BPP * RECORDER_SAMPLERATE * channels / 8;
@@ -273,19 +233,28 @@ public class RecordInteractor
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage(), e);
         }
         finally
         {
             try
             {
-                in.close();
-                outFile.close();
-                outputStream.close();
+                if (in != null)
+                {
+                    in.close();
+                }
+                if (outFile != null)
+                {
+                    outFile.close();
+                }
+                if (outputStream != null)
+                {
+                    outputStream.close();
+                }
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                Log.e(TAG, e.getMessage(), e);
             }
         }
     }

@@ -1,4 +1,4 @@
-package s2m.soundcheck.frequencyplotusecase.view;
+package s2m.soundcheck.spectogram.view;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
@@ -19,13 +19,13 @@ import s2m.soundcheck.utils.Helper;
 /**
  * Created by cta on 18/09/15.
  */
-public class FrequencyPresenter implements ViewEventListener
+public class SpectrogramPresenter implements ViewEventListener
 {
-    private static String TAG = FrequencyPresenter.class.getSimpleName();
+    private static String TAG = SpectrogramPresenter.class.getSimpleName();
 
-    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/fft";
+    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/spectrogram";
 
-    private FrequencyPlotView frequencyPlotView;
+    private SpectrogramView spectrogramView;
 
     private Subscription readFileSubscription;
 
@@ -34,7 +34,7 @@ public class FrequencyPresenter implements ViewEventListener
     {
         readFileSubscription = Observable.just(Helper.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<byte[]>()
         {
-            double[] outputFFT = null;
+            double[][] outputSpectrogram = new double[0][0];
 
             @Override
             public void onCompleted()
@@ -44,7 +44,7 @@ public class FrequencyPresenter implements ViewEventListener
                     @Override
                     public void run()
                     {
-                        frequencyPlotView.setSamples(outputFFT);
+                        spectrogramView.setSamples(outputSpectrogram);
                     }
                 });
             }
@@ -52,13 +52,13 @@ public class FrequencyPresenter implements ViewEventListener
             @Override
             public void onError(Throwable e)
             {
-                Log.e(TAG, e.getMessage(), e);
+                Log.e(TAG, e.getMessage());
             }
 
             @Override
-            public void onNext(byte[] sampleArray)
+            public void onNext(byte[] bytesRead)
             {
-                outputFFT = requestFFT(Arrays.copyOfRange(sampleArray, 44, sampleArray.length));
+                outputSpectrogram = requestSpectrogram(Arrays.copyOfRange(bytesRead, 44, bytesRead.length));
             }
         });
     }
@@ -70,18 +70,17 @@ public class FrequencyPresenter implements ViewEventListener
     }
 
     @Override
-    public void setFrequencyPlot(@NonNull FrequencyPlotView frequencyPlotView)
+    public void setSpectrogramView(@NonNull SpectrogramView spectrogramView)
     {
-        this.frequencyPlotView = frequencyPlotView;
+        this.spectrogramView = spectrogramView;
     }
 
-    public static double[] requestFFT(byte[] sampleArray)
+    public static double[][] requestSpectrogram(byte[] sampleArray)
     {
-        double[] outputFFT = null;
+        double[][] outputFFT = null;
         try
         {
             HttpURLConnection connection = Helper.buildURLConnection(SERVER_URL);
-
             OutputStream output = null;
             try
             {
@@ -109,7 +108,7 @@ public class FrequencyPresenter implements ViewEventListener
 
             ObjectInputStream in = new ObjectInputStream(connection.getInputStream());
 
-            outputFFT = (double[]) in.readObject();
+            outputFFT = (double[][]) in.readObject();
 
             in.close();
 
@@ -126,4 +125,6 @@ public class FrequencyPresenter implements ViewEventListener
 
         return outputFFT;
     }
+
+
 }

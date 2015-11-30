@@ -18,18 +18,25 @@
         android:padding="20dp">
 
         <ImageView
-            android:id="@+id/start_record_button"
+            android:id="@+id/start_checksound_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_mic_black_48dp"/>
 
         <ImageView
-            android:id="@+id/stop_record_button"
+            android:id="@+id/stop_checksound_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_stop_black_48dp"
             android:visibility="gone"/>
 
     </FrameLayout>
+
+    <TextView
+        android:id="@+id/compare_textview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="20dp"/>
 
 </LinearLayout>

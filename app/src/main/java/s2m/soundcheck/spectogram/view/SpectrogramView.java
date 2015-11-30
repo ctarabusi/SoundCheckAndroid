@@ -1,4 +1,4 @@
-package s2m.soundcheck.spectogramusecase.view;
+package s2m.soundcheck.spectogram.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,8 +7,6 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-
-import org.apache.commons.math.complex.Complex;
 
 /**
  * Created by cta on 23/11/15.

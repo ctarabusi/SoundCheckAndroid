@@ -14,8 +14,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import s2m.soundcheck.R;
-import s2m.soundcheck.recordingusecase.interactor.RecordInteractor;
+import s2m.soundcheck.recording.interactor.RecordInteractor;
 
 /**
  * Created by cta on 25/11/15.

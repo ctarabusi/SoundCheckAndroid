@@ -5,6 +5,7 @@
     <string name="action_map">Map</string>
 
     <string name="navigation_record">Record</string>
+    <string name="navigation_compare">Compare</string>
     <string name="navigation_waveform">Waveform</string>
     <string name="navigation_spectrogram">Spectrogram</string>
     <string name="navigation_frequency">Frequency</string>
