@@ -10,6 +10,8 @@ import com.squareup.leakcanary.LeakCanary;
  */
 public class ViperApplication extends Application
 {
+    public static final String BASE_SERVER_URL = "http://192.168.178.15:8080/";
+
     private static ViperApplication instance;
 
     public ViperApplication()

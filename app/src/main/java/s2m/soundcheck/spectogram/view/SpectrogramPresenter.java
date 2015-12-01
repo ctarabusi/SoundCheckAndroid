@@ -14,6 +14,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
+import s2m.soundcheck.ViperApplication;
 import s2m.soundcheck.utils.Helper;
 
 /**
@@ -23,7 +24,7 @@ public class SpectrogramPresenter implements ViewEventListener
 {
     private static String TAG = SpectrogramPresenter.class.getSimpleName();
 
-    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/spectrogram";
+    public static final String SERVER_URL = ViperApplication.BASE_SERVER_URL + "fourier-transform/spectrogram";
 
     private SpectrogramView spectrogramView;
 

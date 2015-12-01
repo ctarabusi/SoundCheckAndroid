@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Observer;
 import rx.schedulers.Schedulers;
+import s2m.soundcheck.ViperApplication;
 import s2m.soundcheck.utils.Helper;
 
 /**
@@ -31,7 +32,7 @@ public class RecordInteractor
 {
     private static final String TAG = RecordInteractor.class.getSimpleName();
 
-    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/recording";
+    public static final String SERVER_URL = ViperApplication.BASE_SERVER_URL + "fourier-transform/recording";
 
     public final static    String RECORDED_FILE_NAME      = "Recording.wav";
     protected final static String RECORDED_TEMP_FILE_NAME = "temp.wav";

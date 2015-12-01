@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Observer;
 import rx.schedulers.Schedulers;
+import s2m.soundcheck.ViperApplication;
 import s2m.soundcheck.recording.interactor.RecordInteractor;
 import s2m.soundcheck.utils.Helper;
 
@@ -26,7 +27,7 @@ public class CheckSoundInteractor extends RecordInteractor
 {
     private static final String TAG = CheckSoundInteractor.class.getSimpleName();
 
-    public static final String SERVER_URL = "http://192.168.178.15:8080/fourier-transform/checksound";
+    public static final String SERVER_URL = ViperApplication.BASE_SERVER_URL + "fourier-transform/checksound";
 
     private DataChangeListener dataChangeListener;
 
@@ -98,7 +99,7 @@ public class CheckSoundInteractor extends RecordInteractor
         FileInputStream in = null;
         OutputStream outputStream = null;
 
-        byte[] data = new byte[bufferSize];
+        byte[] buffer = new byte[bufferSize];
 
         try
         {
@@ -107,11 +108,11 @@ public class CheckSoundInteractor extends RecordInteractor
             HttpURLConnection connection = Helper.buildURLConnection(SERVER_URL);
 
             outputStream = connection.getOutputStream();
-
-            while (in.read(data) != -1)
+            for (int length = in.read(buffer); length != -1; length = in.read(buffer))
             {
-                outputStream.write(data);
+                outputStream.write(buffer);
             }
+            outputStream.flush();
 
             int status = connection.getResponseCode();
             Log.d(TAG, "Status : " + status);
