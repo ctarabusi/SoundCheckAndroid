@@ -24,7 +24,7 @@ public class FrequencyPresenter implements ViewEventListener
 {
     private static String TAG = FrequencyPresenter.class.getSimpleName();
 
-    public static final String SERVER_URL = ViperApplication.BASE_SERVER_URL +"/fourier-transform/fft";
+    public static final String SERVER_URL = ViperApplication.BASE_SERVER_URL + "fourier-transform/fft";
 
     private FrequencyPlotView frequencyPlotView;
 
