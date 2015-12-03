@@ -14,19 +14,16 @@
         <item
             android:id="@+id/navDrawerWaveform"
             android:checked="false"
-            android:icon="@drawable/ic_camera_roll_black_48dp"
             android:title="@string/navigation_waveform"/>
 
         <item
             android:id="@+id/navDrawerFrequency"
             android:checked="false"
-            android:icon="@drawable/ic_camera_roll_black_48dp"
             android:title="@string/navigation_frequency"/>
 
         <item
             android:id="@+id/navDrawerSpectrogram"
             android:checked="false"
-            android:icon="@drawable/ic_group_add_black_48dp"
             android:title="@string/navigation_spectrogram"/>
     </group>
 
