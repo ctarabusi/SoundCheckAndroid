@@ -29,7 +29,7 @@ public class WaveformPresenter implements ViewEventListener
     @Override
     public void viewVisible(@NonNull Activity activity)
     {
-        readFileSubscription = Observable.just(Helper.readAsset(activity)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<byte[]>()
+        readFileSubscription = Observable.just(Helper.readAsset()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<byte[]>()
         {
             @Override
             public void onCompleted()

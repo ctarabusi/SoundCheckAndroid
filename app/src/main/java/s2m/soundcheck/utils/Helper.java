@@ -1,7 +1,5 @@
 package s2m.soundcheck.utils;
 
-import android.app.Activity;
-import android.content.res.Resources;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -23,23 +21,37 @@ public class Helper
 {
     private static String TAG = Helper.class.getSimpleName();
 
-
-    public static byte[] readAsset(@NonNull Activity activity)
+    public static byte[] readAsset()
     {
-        byte[] byteArray = null;
+        File recordedFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), RecordInteractor.RECORDED_FILE_NAME);
+        return convertStreamToByteArray(recordedFile);
+    }
+
+    private static byte[] convertStreamToByteArray(File recordedFile)
+    {
         InputStream inputStream = null;
-        Resources res = activity.getResources();
         try
         {
-            File recordedFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), RecordInteractor.RECORDED_FILE_NAME);
             inputStream = new FileInputStream(recordedFile);
-           // inputStream = res.openRawResource(R.raw.whistle);
 
-            byteArray = convertStreamToByteArray(inputStream);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            // Ignoring wav header bytes
+            inputStream.read(new byte[44], 0, 44);
+
+            byte[] buffer = new byte[2048];
+            for (int length = inputStream.read(buffer); length != -1; length = inputStream.read(buffer))
+            {
+                baos.write(buffer, 0, length);
+            }
+            baos.flush();
+            baos.close();
+
+            return baos.toByteArray();
         }
         catch (IOException e)
         {
-            Log.e(TAG, e.getMessage(), e);
+            Log.d(TAG, e.getMessage(), e);
         }
         finally
         {
@@ -51,28 +63,11 @@ public class Helper
                 }
                 catch (IOException e)
                 {
-                    Log.e(TAG, e.getMessage(), e);
+                    Log.d(TAG, e.getMessage(), e);
                 }
             }
         }
-
-        return byteArray;
-    }
-
-    public static byte[] convertStreamToByteArray(InputStream is) throws IOException
-    {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        // Ignoring header data
-        is.read(new byte[44], 0, 44);
-
-        byte[] buff = new byte[10240];
-        int i = Integer.MAX_VALUE;
-        while ((i = is.read(buff, 0, buff.length)) > 0)
-        {
-            baos.write(buff, 0, i);
-        }
-        return baos.toByteArray(); // be sure to close InputStream in calling function
+        return new byte[0];
     }
 
     @NonNull
