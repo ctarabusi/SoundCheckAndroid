@@ -15,7 +15,7 @@ public class SpectrogramView extends View
 {
     private static String TAG = SpectrogramView.class.getSimpleName();
 
-    private Paint       mGridPaint;
+    private Paint      mGridPaint;
     private double[][] samplesList;
 
 
@@ -66,6 +66,7 @@ public class SpectrogramView extends View
         short blockSizeY = 20;
         double magnitude;
 
+        double maxMagnitude = 0;
         for (int i = 0; i < samplesList.length; i++)
         {
             int freq = 0;
@@ -75,10 +76,30 @@ public class SpectrogramView extends View
                 // To get the magnitude of the sound at a given frequency slice
                 // get the abs() from the complex number.
                 // In this case I use Math.log to get a more managable number (used for color)
-                magnitude = Math.log(samplesList[i][freq] + 1);
+                magnitude = samplesList[i][freq];
+                if (maxMagnitude < magnitude)
+                {
+                    maxMagnitude = magnitude;
+                }
+
+                freq++;
+            }
+        }
+        Log.d(TAG, "magnitude max is " + maxMagnitude);
+
+        for (int i = 0; i < samplesList.length; i++)
+        {
+            int freq = 0;
+            int size = samplesList[i].length - 1;
+            for (int line = 1; line < size; line++)
+            {
+                // To get the magnitude of the sound at a given frequency slice
+                // get the abs() from the complex number.
+                // In this case I use Math.log to get a more managable number (used for color)
+                magnitude = samplesList[i][freq] / maxMagnitude;
 
                 // The more blue in the color the more intensity for a given frequency point:
-                mGridPaint.setColor(Color.rgb(0, (int) magnitude * 10, (int) magnitude * 20));
+                mGridPaint.setColor(Color.rgb(0, (int) (magnitude * 255 * 100), (int) (magnitude * 255 * 100)));
 
                 canvas.drawRect(i * blockSizeX, (size - line) * blockSizeY, (i + 1) * blockSizeX, (size - line) * blockSizeY + blockSizeY, mGridPaint);
 
