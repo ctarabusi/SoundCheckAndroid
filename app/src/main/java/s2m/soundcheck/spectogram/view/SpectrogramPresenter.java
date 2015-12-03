@@ -27,7 +27,6 @@ public class SpectrogramPresenter implements ViewEventListener
     public static final String SERVER_URL = ViperApplication.BASE_SERVER_URL + "fourier-transform/spectrogram";
 
     private SpectrogramView spectrogramView;
-
     private Subscription readFileSubscription;
 
     @Override
@@ -123,9 +122,6 @@ public class SpectrogramPresenter implements ViewEventListener
         {
             e.printStackTrace();
         }
-
         return outputFFT;
     }
-
-
 }

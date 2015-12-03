@@ -6,13 +6,12 @@ import android.support.annotation.NonNull;
 import javax.inject.Inject;
 
 import s2m.soundcheck.R;
-import s2m.soundcheck.recording.interactor.DataChangeListener;
 import s2m.soundcheck.recording.interactor.RecordInteractor;
 
 /**
  * Created by cta on 17/09/15.
  */
-public class RecordPresenter implements ViewEventListener, DataChangeListener
+public class RecordPresenter implements ViewEventListener
 {
     private UpdateViewInterface output;
 
@@ -24,8 +23,6 @@ public class RecordPresenter implements ViewEventListener, DataChangeListener
     public RecordPresenter(Context applicationContext)
     {
         recordInteractor = new RecordInteractor(applicationContext);
-
-        this.recordInteractor.setOutput(this);
     }
 
     @Override
@@ -69,11 +66,5 @@ public class RecordPresenter implements ViewEventListener, DataChangeListener
             output.stopChronometer();
             output.showRecordingSnackbar(R.string.record_stop);
         }
-    }
-
-    @Override
-    public void exceptionFromInteractor()
-    {
-        output.showRecordingSnackbar(R.string.record_error);
     }
 }

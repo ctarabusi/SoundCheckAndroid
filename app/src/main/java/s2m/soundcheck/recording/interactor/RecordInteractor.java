@@ -37,8 +37,6 @@ public class RecordInteractor
     public final static    String RECORDED_FILE_NAME      = "Recording.wav";
     protected final static String RECORDED_TEMP_FILE_NAME = "temp.wav";
 
-    private DataChangeListener dataChangeListener;
-
     protected Context applicationContext;
 
     private static final int RECORDER_BPP            = 16;
@@ -55,11 +53,6 @@ public class RecordInteractor
     public RecordInteractor(Context applicationContext)
     {
         this.applicationContext = applicationContext;
-    }
-
-    public void setOutput(DataChangeListener dataChangeListener)
-    {
-        this.dataChangeListener = dataChangeListener;
     }
 
     protected File getFilename()

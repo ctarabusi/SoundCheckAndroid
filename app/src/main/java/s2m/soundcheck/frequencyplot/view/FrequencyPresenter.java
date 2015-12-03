@@ -109,9 +109,7 @@ public class FrequencyPresenter implements ViewEventListener
             Log.d(TAG, "Status : " + status);
 
             ObjectInputStream in = new ObjectInputStream(connection.getInputStream());
-
             outputFFT = (double[]) in.readObject();
-
             in.close();
 
             connection.disconnect();
